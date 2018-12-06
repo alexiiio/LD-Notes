@@ -2,7 +2,7 @@
 # 概念
 
 KVO全称 Key-Value-Observer 键值观察者，就是观察者模式。        
-**[KVO](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html#//apple_ref/doc/uid/10000177-BCICJDHA) 是一种允许对象监听其他对象特定属性变化的机制**。
+**[KVO](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html#//apple_ref/doc/uid/10000177-BCICJDHA) 是一种允许对象监听其他对象特定属性变化的机制**。观察者对目标对象的某属性添加观察，当该属性发生变化时，通过触发观察者对象实现的KVO接口方法，来自动的通知观察者。
 
 常用于模型和控制器层之间的通信。控制器观察模型对象的属性，视图对象通过控制器观察模型对象的属性。另外，模型对象可以观察其他对象或自身，通常用于确定依赖属性值何时改变。（比如，人的全名取决于姓氏和名字，当其中一个变化时，全名也应随之改变）
 
