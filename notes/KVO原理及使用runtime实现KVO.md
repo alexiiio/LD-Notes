@@ -8,6 +8,15 @@ KVO全称 Key-Value-Observer 键值观察者，就是观察者模式。
 
 使用KVO观察属性有一对一关系和一对多关系。每个被观察的属性值变化都会通知观察者。
 
+# KVO和KVC的关系
+
+KVO常跟KVC一起被提起，不仅是因为名字相近。根据苹果的说法，KVO的实现依赖于KVC机制。符合KVO机制的条件之一就是，类的属性符合KVC标准。这个标准大意就是保证属性getter和setter的完整性。
+
+![image](https://raw.githubusercontent.com/alexiiio/LD-Notes/master/pics/kvokvc1.png)    
+![image](https://raw.githubusercontent.com/alexiiio/LD-Notes/master/pics/kvokvc1.png)
+
+可以大致了解下KVC。参考[KVC简述](http://note.youdao.com/noteshare?id=7055dcd1acbf707562fa2f7371cccd7c)，[KVC官方文档](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/KeyValueCoding/index.html#//apple_ref/doc/uid/10000107-SW1)
+
 # KVO的使用
 
 
