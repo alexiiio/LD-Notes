@@ -5,7 +5,7 @@ Cocopods作为iOS的第三方库管理工具，非常方便易用。之前都是
 
 
 2. **创建github仓库。**    
-
+ 
 ![image](https://github.com/alexiiio/LD-Notes/blob/master/pics/屏幕快照%202018-11-22%20下午1.13.49.png?raw=true)
 
 3. **然后`clone`到本地，把代码上传到github仓库**。        
@@ -45,7 +45,7 @@ s.summary = '一个GCD timer工具。'
 s.description = '一个GCD timer简单工具类。'
 s.homepage = 'https://github.com/alexiiio/LDGCDTimer'
 s.author = { 'alexiiio' => '450145524@qq.com' }
-s.source = { :git => "https://github.com/alexiiio/LDGCDTimer.git", :tag => "0.0.1"}
+s.source = { :git => "https://github.com/alexiiio/LDGCDTimer.git", :tag => "v0.0.1"}
 s.requires_arc = true
 s.ios.deployment_target = '7.0'
 s.source_files = "LDGCDTimer/LDGCDTimer.h","LDGCDTimer/LDGCDTimer.m"
@@ -55,13 +55,13 @@ end
 4. 相应内容对应的含义如下，**修改成自己的项目信息**。
 ```
 s.name ： 工程名 
-s.version ： 版本，要和github上的仓库tag对应
+s.version ： 版本号
 s.license ：授权，前面创建仓库选择的类型
 s.summary ：简述 
 s.description ： 描述 
 s.homepage ： github仓库主页 
 s.author ： 作者名字和联系邮箱
-s.source : github仓库地址（.git），以及版本tag 
+s.source : github仓库地址（.git），以及版本tag（要跟github上的仓库tag完全一致） 
 s.requires_arc ：是否是ARC 
 s.ios.deployment_target ： 你支持的最低版本 
 s.source_files ： 资源文件，此处是我们最重要上传的代码所在路径。起始路径跟podspec路径同级。这里很容易出错，需注意！
@@ -79,7 +79,7 @@ pod spec lint
 终端会提示哪些格式错误，修改之后一直报错：  
 ![image](https://github.com/alexiiio/LD-Notes/blob/master/pics/屏幕快照%202018-11-22%20下午7.03.17.png?raw=true)   
 搞了好久，查了不少资料，最后发现工程命名错了[吐血],两个英文字母颠倒了，看了多少遍都没看出来......    
-![image](https://ww1.sinaimg.cn/large/6af89bc8gw1f8nufnvwqoj206r06qmx8.jpg)   
+![image](https://raw.githubusercontent.com/alexiiio/LD-Notes/master/pics/6af89bc8gw1f8nufnvwqoj206r06qmx8.jpg)   
 之后重建项目，检查命名，上传github，修改tag位置。还是报`- ERROR | [iOS] file patterns: The `source_files` pattern did not match any file.`错误，最后把`s.source_files`改为：   
 ```
 s.source_files = "LDGCDTimer/LDGCDTimer/"
@@ -110,12 +110,12 @@ pod trunk me
 ```
 输出如下信息就是注册好了：
 ```
-- Name:     -description=
-- Email:    xxx@xx.com
-- Since:    November 22nd, 06:05
-- Pods:     None
-- Sessions:
-- November 22nd, 06:05 - March 30th, 2019 06:11. IP: xx.xx.xx.xx
+  - Name:     -description=
+  - Email:    xxx@xx.com
+  - Since:    November 22nd, 06:05
+  - Pods:     None
+  - Sessions:
+    - November 22nd, 06:05 - March 30th, 2019 06:11. IP: xx.xx.xx.xx
 ```
 3. **通过trunk推送podspec**
 ```
@@ -165,12 +165,12 @@ pod trunk push xxx.podspec
 等待输出成功的信息就可以了。
 ```
 --------------------------------------------------------------------------------
-🎉  Congrats
+ 🎉  Congrats
 
-🚀  LDGCDTimer (0.0.2) successfully published
-📅  November 25th, 20:07
-🌎  https://cocoapods.org/pods/LDGCDTimer
-👍  Tell your friends!
+ 🚀  LDGCDTimer (0.0.2) successfully published
+ 📅  November 25th, 20:07
+ 🌎  https://cocoapods.org/pods/LDGCDTimer
+ 👍  Tell your friends!
 --------------------------------------------------------------------------------
 ```
 打完收工。

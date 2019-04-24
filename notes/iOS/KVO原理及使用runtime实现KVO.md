@@ -1,7 +1,7 @@
 
 # 概念
 
-KVO全称 Key-Value-Observer 键值观察者，就是观察者模式。        
+KVO全称 Key-Value-Observer 键值观察者，是观察者模式的一种。        
 **[KVO](https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/KeyValueObserving/KeyValueObserving.html#//apple_ref/doc/uid/10000177-BCICJDHA) 是一种允许对象监听其他对象特定属性变化的机制**。观察者对目标对象的某属性添加观察，当该属性发生变化时，通过触发观察者对象实现的KVO接口方法，来自动的通知观察者。
 
 常用于模型和控制器层之间的通信。控制器观察模型对象的属性，视图对象通过控制器观察模型对象的属性。另外，模型对象可以观察其他对象或自身，通常用于确定依赖属性值何时改变。（比如，人的全名取决于姓氏和名字，当其中一个变化时，全名也应随之改变）
@@ -10,7 +10,7 @@ KVO全称 Key-Value-Observer 键值观察者，就是观察者模式。
 
 # KVO和KVC的关系
 
-KVO常跟KVC一起被提起，不仅是因为名字相近。根据苹果的说法，KVO的实现依赖于KVC机制。符合KVO机制的条件之一就是，类的属性符合KVC标准。这个标准大意就是保证属性getter和setter的完整性。下面是苹果文档摘选。
+KVO常跟KVC一起被提起，不仅是因为名字相近。根据苹果的说法，KVO的实现依赖于KVC机制。符合KVO机制的条件之一就是，类符合KVC遵从性。大意就是对象采用`NSKeyValueCoding`非正式协议，保证属性getter和setter的完整性。而`NSObject`已经完成了这部分工作，所以它的子类不需要做额外的工作就可以直接使用KVC。可以下面是苹果文档摘选。
 
 ![image](https://raw.githubusercontent.com/alexiiio/LD-Notes/master/pics/kvokvc1.png)    
 ![image](https://raw.githubusercontent.com/alexiiio/LD-Notes/master/pics/kvokvc2.png)
@@ -31,6 +31,10 @@ KVO常跟KVC一起被提起，不仅是因为名字相近。根据苹果的说�
 KVO的主要好处是不必在每次属性更改时都实施自己的方案来发送通知。KVO具有框架级（`framework-level`）支持使得它易于使用，不需要在项目中添加多余代码。此外，KVO基础架构（`infrastructure`）已经功能齐全，这使得支持单个属性的多个观察者以及依赖值变得容易。
 
 ## 其他特性
+
+可以通过方法context传入任意类型的对象，在接收消息回调的代码中可以接收到这个对象，是KVO中的一种传值方式。
+context可以设置一个唯一标示，假设父类和子类监听了同一个属性时，可以根据context判断谁来处理。
+
 
 **手动控制通知**：有些时候我们可能希望控制通知过程，比如减少因程序特定原因而不必要的触发通知。
 
@@ -55,7 +59,7 @@ KVO的主要好处是不必在每次属性更改时都实施自己的方案来�
 KVO的实现主要有以下几步，以Person类为例：
 1. 当Person类的对象第一次添加观察者时，系统会在运行时动态生成一个Person的派生类，命名规则是在原类名前加上`NSKVONotifying_`前缀，即`NSKVONotifying_Person`。
 2. 在派生类里重写被观察属性的`setter`方法，在setter方法里实现通知机制。在修改值之前调用`willChangeValueForKey:`方法，修改值之后调用`didChangeValueForKey:`方法，最终都会发送消息到`observeValueForKeyPath:ofObject:change:context:`方法。
-3. 在派生类中重写`class`方法，将自己伪装成原类。还会重写`dealloc`方法释放资源。
+3. 在派生类中重写`class`方法，将自己伪装成原类；重写`dealloc`方法释放资源；还有一个`_isKVOA`方法，用来判断是否是一个派生类。
 4. 将被观察对象的`isa`指针指向新创建的派生类。
 
 
@@ -112,7 +116,7 @@ object_setClass(self, kvoClass);
 
 第一个是Class类型，要添加方法的类。就是前面的kvoClass。
 
-第二个参数是SEL类型，要添加的方法名。这里就是setter方法名，类似 `setName:` 注意“:”一定要有。
+第二个参数是SEL类型，要添加的方法编号。这里就是setter方法，方法名类似 `setName:` 注意“:”一定要有。
 ```
 // 根据属性名生成setter方法名
 NSRange firstRange = NSMakeRange(0, 1);
@@ -137,7 +141,7 @@ void setterIMP(id self,SEL _cmd,void *newValue){
 
 }
 ```
-在`setter`方法里，我们需要完成`setter`方法本来要做的事情，即给属性赋值。而KVC赋值会调用自身`setter`方法，造成死循环。所以这里要**调用父类的`setter`**。这里写方法有个技巧，就是看方法需要传什么类型参数，我们就创建什么类型参数放进去，`objc_msgSendSuper`方法需要传一个`struct objc_super *`类型的参数，即指向`objc_super`结构体的指针，那我们就创建一个` objc_super`结构体，然后`&`取地址。`struct objc_super`的创建同理。苹果文档一般有清楚的参数说明，按照要求写就行了。
+在`setter`方法里，我们需要完成`setter`方法本来要做的事情，即给属性赋值。如果使用KVC赋值会调用自身`setter`方法，造成死循环。所以这里要**调用父类的`setter`**。这里写方法有个技巧，就是看方法需要传什么类型参数，我们就创建什么类型参数放进去，`objc_msgSendSuper`方法需要传一个`struct objc_super *`类型的参数，即指向`objc_super`结构体的指针，那我们就创建一个` objc_super`结构体，然后`&`取地址。`struct objc_super`的创建同理。苹果文档一般有清楚的参数说明，按照要求写就行了。
 
 ```
     //    调用父类的set方法
@@ -190,6 +194,13 @@ objc_setAssociatedObject(self, setMethod, keyPath, OBJC_ASSOCIATION_COPY);
 ```
 # 移除观察者
 
+当观察者不再需要接收通知时，调用`LD_removeObserver`方法移除观察者，需要把观察者从保存观察者的字典里移除。移除后，如果被观察者对象一个观察者都没有，恢复被观察者`isa`指针，指向原类，销毁派生类。
+```
+        object_setClass(self, [self superclass]);
+        objc_disposeClassPair(kvoClass);
+```
+
+
 观察者和被观察者之间往往会形成循环引用。比如控制器持有Person对象，而person在添加控制器作为观察者时又会强引用控制器对象。
 ```
 @property(nonatomic,strong)Person *person;
@@ -200,6 +211,15 @@ objc_setAssociatedObject(self, kLDKVOObserverDictionary, observerDictionary, OBJ
 如上代码，观察者持有被观察者person，person（self）强引用观察者字典，字典对象持有观察者，而构成循环引用。
 
 当不再接收通知时，一定要移除观察者，破除循环引用。
+
+# 如何关闭系统KVO的默认实现
+重写`automaticallyNotifiesObserversForKey`方法并返回NO。
+```
++ (BOOL)automaticallyNotifiesObserversForKey:(NSString *)key {
+    return NO;
+}
+```
+也可以指定Key值关闭。
 
 
 # 其他
@@ -216,4 +236,4 @@ objc_setAssociatedObject(self, kLDKVOObserverDictionary, observerDictionary, OBJ
 
 **注意**：与系统KVO不兼容，即同一个被观察者对象不可以同时使用系统KVO和LDKVO，会死循环。不同被观察对象不影响。
 
-自己实现KVO主要是用来理解KVO的实现原理，实现的过程用到了很多runtime的动态特性，也是对runtime的学习。如果实际项目使用KVO，可以看下Facebook的[KVOController](https://github.com/facebook/KVOController)。
+自己实现KVO主要是用来理解KVO的实现原理，实现的过程用到了很多runtime的动态特性，也是对runtime的学习。当然自己仿写的KVO跟系统KVO还是有很大差别的，一些功能并不完善，如果实际项目使用KVO，可以看下Facebook的[KVOController](https://github.com/facebook/KVOController)。
